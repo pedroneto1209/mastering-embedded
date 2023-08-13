@@ -1,0 +1,4 @@
+C:/Users/pedro/workspace/personal/mastering-embedded/Code/make/build/CMakeFiles/log.dir
+C:/Users/pedro/workspace/personal/mastering-embedded/Code/make/build/CMakeFiles/main.dir
+C:/Users/pedro/workspace/personal/mastering-embedded/Code/make/build/CMakeFiles/edit_cache.dir
+C:/Users/pedro/workspace/personal/mastering-embedded/Code/make/build/CMakeFiles/rebuild_cache.dir
