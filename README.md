@@ -2,4 +2,4 @@ https://miro.com/welcomeonboard/V1dYekc0RlhSRk1XalZGeEZZckcxWHN2UENCVm5mcnQ1aktx
 
 https://github.com/m3y54m/Embedded-Engineering-Roadmap
 
-Checkpoint - C++ Header Files 5:30 and CMake Good 1b 4:02
+Checkpoint - C++ Header Files 5:30 and Scripting Basics
