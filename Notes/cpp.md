@@ -59,3 +59,73 @@ the variable passed to a reference can't change and it has to be referenced in t
 by default the variables inside a class are private, if you want to use them outside you declare inside the `public:` area, this is actually the only difference between a `class` and a `struct`, where you can actually write `private` inside, this even means if you want to convert `C` into `C++` you could just do ```#define struct class```
 
 One convention possible is to use structs to something simple, like the representation of a vector, with module methods, etc. And a class to something more meaningful, like a player with vector positions and so on.
+
+You can instantiate a class by using list-initialization like this:
+```cpp
+class Entity {
+    int x, y;
+}
+
+Entity entity = {1, 2};
+```
+
+### Static
+
+- Outside of a class, `static` will only be used in the scope it is declared
+  - the `extern` it's like the opposite, it will reference the defined variable/function to the same variable defined in another global scope
+  - it's a good practice to use static every time if you don't need the variable/function in another scopes
+- Inside a class, `static` will be instantiated once for every instance of the class
+  - when using static the variables are no longer class members, so the list initializer will not work
+  - it needs to be instantiated because just the static define will not alloc memory for those variables
+  - after instantiated like `int Entity::x;`, it makes no sense to assign values like `entity.x = 10`, the correct way would be `Entity::x = 10;`
+  - In resume, they dont belong to the class, but actually they do as they are sensitive to public and private defines for example, this means they work like global variables but they are more organized as they belong to the class because they may have something to do with it
+  - for static methods, they don't have an instance, so you can't access normal variables inside a class with them, they work just like global static functions
+
+### Enums
+ Enum is like a dict in python: 
+ ```cpp
+ enum Example : unsigned char { // the int type can be specified
+    A = 0, B, C; // the values can be set, starts at 0 by default
+ }
+
+ Example selected = C; // this has to be one of the defined
+ ```
+
+ ### Constructors
+ When you have a class such as Entity defined before, x and y are not initialized, the constructor `Entity()` is a function inside the class to initialize these parameters: 
+ ```cpp
+class Entity {
+public:
+    int X, Y;
+    Entity(int x, int y) {
+        X = x;
+        Y = y;
+    }
+} 
+ ```
+ What may be helpful is to make the constructor private so you can't instantiate the class `Log log; log.Write();`, it will only be used with static methods for example `Log::Write();`, if you don't want to specify the constructor to be private but also don't want the default constructor you can make `Log() = delete;
+ 
+ ### Destructors
+ `~Entity(){}` runs when `entity.~Entity()` is called, but this usually happen when the instance is created inside a function, so when the function finish running the instance is destroyed
+
+ ### Inheritance
+ - The class created by inheritance is actually both types, this means you could pass Player for a function that requires Entity for example
+ - `class Player : public Entity`
+
+### Virtual Functions
+They overwrite the methods of the class we are inheriting, if you were to just write a normal method with the same name it would not work, because even though calling Player would work, calling Player as type Entity for example would just use the method from Entity instead of Player, to fix this, you should change the base function of the base class to be overwritable, which means calling it virtual:
+```cpp
+// inside Entity
+virtual std::string getName() {
+
+}
+```
+Also, it is not mandatory but it is the best practice to make clear Player's getName is an override:
+```cpp
+// inside Player
+std::string getName() override {
+
+}
+```
+
+NOTE FOR EMBEDDED: Virtual functions have a cost, the V-Table has to contain the function pair so it takes more memory and when the virtual function runs it has to check this V-Table for the override function so this means more clock cycles.
