@@ -184,3 +184,34 @@ bool contains = name.find("ro") != std::string::npos; // basically checking if t
 
 NOTE FOR CLASSES TOO: You can't pass a class (or std::string) as parameter to a function and expect it to change the original string, because when passing, the function is actually instantiating a new class (or std::string) copying the passed class in `void Function(std::string string)`, this means any changes won't affect the original string and also means that even if you are reading only, it would not be memory effective. The way to do this properly is by passing a const (not changable) reference (not copying) to the function `void Function(const std::string& string)`, you still can't modify, but you can read without performance issues
 Double "quotes" are char pointers, singles 'quotes' are single chars
+
+### String literals
+you can't modify a char pointer by assigning like this `char* string[3] = "the";  string[2] = 'o';` because this is an undefined behaviour (some compilers it might work but not in every, because string literal are usually saved in a read-only memory), you should declare it `const`. The only way to make this work is by using it as an char array, not an pointer `char string[] = "the";`
+
+In fact, string literals are ALWAYS stored in read-only memory, even when we do `char string[] = "the";`, the assembly is copying the read-only string to an actual variable, and it is changing as a variable, and not the memory itself
+
+Notice that is a helper in cpp called std::string_literals that has features to deal with these string defines and char types
+
+Types:
+```cpp
+
+const char* name1 = u8"Pedro"; // 1B UTF8 char
+const wchar_t* name2 = L"Pedro"; // 2B
+const char16_t* name3 = u"Pedro"; // 2B UTF16 char
+const char32_t* name4 = U"Pedro"; // 4B UTF32 char
+
+const char* paragraph = R"Line1
+Line2
+Line3
+Line4"; // R stands for row
+
+// the following uses string_literals
+using namespace std::string_literals;
+
+std::string utf8String = u8"Hello, world!";
+std::wstring wideString = L"Wide string"; 
+std::u16string utf16String = u"UTF-16 string";
+std::u32string utf32String = U"UTF-32 string";
+std::u32string concatenated = U"Pedro"s + U" Neto";  // s suffix creates a std::string, instead of using std::string("Pedro") + " Neto"
+```
+
