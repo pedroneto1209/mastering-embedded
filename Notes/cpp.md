@@ -68,6 +68,7 @@ class Entity {
 
 Entity entity = {1, 2};
 ```
+ NOTE: creating classes with `new` uses `malloc()`, it is created in heap
 
 ### Static
 
@@ -104,6 +105,7 @@ public:
 } 
  ```
  What may be helpful is to make the constructor private so you can't instantiate the class `Log log; log.Write();`, it will only be used with static methods for example `Log::Write();`, if you don't want to specify the constructor to be private but also don't want the default constructor you can make `Log() = delete;
+
  
  ### Destructors
  `~Entity(){}` runs when `entity.~Entity()` is called, but this usually happen when the instance is created inside a function, so when the function finish running the instance is destroyed
@@ -129,3 +131,56 @@ std::string getName() override {
 ```
 
 NOTE FOR EMBEDDED: Virtual functions have a cost, the V-Table has to contain the function pair so it takes more memory and when the virtual function runs it has to check this V-Table for the override function so this means more clock cycles.
+
+### Interfaces - Pure Virtual Functions
+Its a virtual function that doesnt have a default implementation, its declared but its only implemented in the subclassess
+```cpp
+// inside Entity
+virtual std::string getName() = 0;
+```
+You can only `instantiate` a class that have all methods implemented, so in this case you couldnt instantiate Entity nor Player if it didn't had the function
+
+### Visibility
+Its not something the CPU understand, its only good practice
+
+In terms of variable and methods access
+- private: only class "friends" and internally can be accessed.
+- protected: can be accessed by subclasses but cant be accessed outside.
+- public: can be accessed outside by everyone.
+
+### Arrays
+An array is actually a pointer to the first item, this means you could assign values as a pointer by dereferencing it:
+`example[2] = 5` = `*(ptr + 2) = 5` = `*(int)((char*)ptr + 8) = 5 //you use char because it is 1 byte long, instead of ints 4 bytes`
+
+When you reach array out of bounds you are accessing memory that isnt yours so this could go wrong
+
+you could create an array in the stack `int example[5];` or in the heap `int* example = new int[5];`.
+- in the stack, the memory will be destroyed when we reach the end bracket
+- in the heap, we need to delete using `delete[] example`
+this is useful to deal with lifetimes, if you have a function returning the array created inside, you would have to use in the heap to delete later, otherwise it would be deleted
+
+For raw arrays you would have to keep track of their size, it is not recommended to try to calculate their size. But in C++11, it has one class for arrays that keeps track of the size, but is also more memory costly
+
+To keep track, creating `example[size]`, size must be a compiler time known constant, so it would have to be `static const int size;`
+
+NOTE FOR EMBEDDED: `<= 4` is more costly than `< 5` because it'll always check both operands
+ALSO: if you create an array in the heap inside a class, the array would not be in the class memory exactly. In fact, the class memory would contain the array address, and in the address the array would be stored (also because the class would be in the stack and the array would be in heap), as the CPU would have to fetch this array in heap, it would be more costly in the performance
+
+### Strings
+char = 1B, its good to use it to access memory 
+
+strings are immutable in size, because they are arrays, thats why you usualy use const = `const char* texto = "text";`
+
+Every string has a null termination byte, it means that it has every ascii in memory from the address is starts and it finishes when it reachs the byte 00, this means that if you try to write a string by hand, if you don't end it with a 0 or '\0', the CPU will think the string is not over, if you print it, other than the name you want, it will print a lot of crap
+
+You should use {<}string{>} in cpp, to do things like: 
+```cpp
+#include <string>
+
+std::string name = std::string("Pedro") + " Neto"; // you need to convert to string class, if not, it would be like adding two char pointers
+name.size();
+bool contains = name.find("ro") != std::string::npos; // basically checking if the position of "no" is valid
+```
+
+NOTE FOR CLASSES TOO: You can't pass a class (or std::string) as parameter to a function and expect it to change the original string, because when passing, the function is actually instantiating a new class (or std::string) copying the passed class in `void Function(std::string string)`, this means any changes won't affect the original string and also means that even if you are reading only, it would not be memory effective. The way to do this properly is by passing a const (not changable) reference (not copying) to the function `void Function(const std::string& string)`, you still can't modify, but you can read without performance issues
+Double "quotes" are char pointers, singles 'quotes' are single chars
