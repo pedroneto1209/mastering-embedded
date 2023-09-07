@@ -34,6 +34,8 @@ a void pointer is a typeless pointer, it doesn't need to have a type, types do n
 
 a pointer to an array points to the first item in the array
 
+NOTE: if you want to declare two pointers at once, `int* X, Y;`, X would be a pointer to an int, and Y would be an int, you will need to declare like this `int* X, *Y;`
+
 ### References
 ```int& ref = a;``` `ref` is going to be exactly like `a`, not equal, it's an alias, it even do not exist in the memory
 
@@ -215,3 +217,11 @@ std::u32string utf32String = U"UTF-32 string";
 std::u32string concatenated = U"Pedro"s + U" Neto";  // s suffix creates a std::string, instead of using std::string("Pedro") + " Neto"
 ```
 
+### CONST
+It's a promisse, it really don't change anything in the final code, but it means for the developer
+
+- for pointers: `const int* a` you can't change the content, `int* const a` you can't change the address, you can add both if you want
+- for methods: `int GetX() const {}` this method can't change any values inside the class, note it is only returning
+
+NOTE: const in a method is mandatory when you pass the method as reference to a function like [this NOTE FOR CLASSES](#strings), because as said, passing by reference means it can't change anything in that function, so it needs to be defined as const to make sure of that
+NOTE 2: if you want to change anyway, if it's something small or something for debug, you can add `mutable` in the variable you want
